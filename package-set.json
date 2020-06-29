@@ -1,0 +1,8 @@
+[
+  {
+    "name": "base",
+    "repo": "git@github.com:dfinity-lab/motoko-base.git",
+    "version": "next-moc",
+    "dependencies": []
+  }
+]
