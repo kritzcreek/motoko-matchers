@@ -5,7 +5,7 @@
 /// values in tests.
 /// It also contains a few helpers to build `Testable`'s for compound types
 /// like Arrays and Optionals. If you want to test your own objects or control
-/// how things are printed compared in your own tests you'll need to create
+/// how things are printed and compared in your own tests you'll need to create
 /// your own `Testable`'s.
 /// ```motoko
 /// import T "Testable";
@@ -23,6 +23,7 @@
 /// }
 /// ```
 import Array "mo:base/Array";
+import Bool "mo:base/Bool";
 import Int "mo:base/Int";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
@@ -75,13 +76,20 @@ module {
         equals = intTestable.equals;
     };
 
+    public let boolTestable : Testable<Bool> = {
+        display = func (n : Bool) : Text = Bool.toText n;
+        equals = func (n1 : Bool, n2 : Bool) : Bool = n1 == n2
+    };
+
+    public func bool(n : Bool) : TestableItem<Bool> = {
+        item = n;
+        display = boolTestable.display;
+        equals = boolTestable.equals;
+    };
+
     public func arrayTestable<A>(testableA : Testable<A>) : Testable<[A]> = {
         display = func (xs : [A]) : Text =
-            "[" #
-            Array.foldLeft(xs, "", func(acc : Text, x : A) : Text =
-                acc # ", " # testableA.display(x)
-            ) #
-            "]";
+            "[" # joinWith(Array.map<A, Text>(xs, testableA.display), ", ") # "]";
         equals = func (xs1 : [A], xs2 : [A]) : Bool =
             Array.equal(xs1, xs2, testableA.equals)
     };
@@ -97,8 +105,9 @@ module {
 
     public func listTestable<A>(testableA : Testable<A>) : Testable<List.List<A>> = {
         display = func (xs : List.List<A>) : Text =
+          // TODO fix leading comma
             "[" #
-            List.foldLeft(xs, "", func(x : A, acc : Text) : Text =
+            List.foldLeft(xs, "", func(acc : Text, x : A) : Text =
                 acc # ", " # testableA.display(x)
             ) #
             "]";
@@ -139,5 +148,39 @@ module {
             display = testableOA.display;
             equals = testableOA.equals;
         };
+    };
+
+    public func tuple2Testable<A, B>(ta : Testable<A>, tb : Testable<B>) : Testable<(A, B)> = {
+      {
+          display = func ((a, b) : (A, B)) : Text =
+              "(" # ta.display(a) # ", " # tb.display(b) # ")";
+          equals = func((a1, b1) : (A, B), (a2, b2) : (A, B)) : Bool =
+              ta.equals(a1, a2) and tb.equals(b1, b2);
+      }
+    };
+
+    public func tuple2<A, B>(ta : Testable<A>, tb : Testable<B>, x : (A, B)) : TestableItem<(A, B)> = {
+      let testableTAB = tuple2Testable(ta, tb);
+      {
+          item = x;
+          display = testableTAB.display;
+          equals = testableTAB.equals;
+      }
+    };
+
+    func joinWith(xs : [Text], sep : Text) : Text {
+        let size = xs.size();
+
+        if (size == 0) return "";
+        if (size == 1) return xs[0];
+
+        var result = xs[0];
+        var i = 0;
+        label l loop {
+            i += 1;
+            if (i >= size) { break l; };
+            result #= sep # xs[i]
+        };
+        result
     };
 }

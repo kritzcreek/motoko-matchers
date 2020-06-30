@@ -2,7 +2,7 @@
   {
     "name": "base",
     "repo": "git@github.com:dfinity-lab/motoko-base.git",
-    "version": "next-moc",
+    "version": "dfx-0.5.10",
     "dependencies": []
   }
 ]
