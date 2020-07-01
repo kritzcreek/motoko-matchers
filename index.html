@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head title="Motoko docs"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><div class="index-container"><h1 class="index-header">Index of modules</h1><ul class="index-listing"><li class="index-item"><a class="index-item-link" href="Matchers.html">Matchers</a><div class="index-item-comment"><p>Composable assertions</p>
+<p>This module contains functions for building and combining <code>Matcher</code>s that
+can be used to build up assertions for testing.</p>
+<pre class="motoko"><code class="motoko">import M &quot;Matchers&quot;;
+import T &quot;Testable&quot;;
+
+assertThat(5 + 5, M.equals(T.nat(10)));
+assertThat(5 + 5, M.allOf&lt;Nat&gt;([M.greaterThan(8), M.lessThan(12)]));
+assertThat([1, 2], M.array([M.equals(T.nat(1)), M.equals(T.nat(2))]));</code></pre></div></li><li class="index-item"><a class="index-item-link" href="Suite.html">Suite</a><div class="index-item-comment"><p>A simple test runner</p>
+<p>The functions in this module let you build up trees of tests, and run them.</p>
+</div></li><li class="index-item"><a class="index-item-link" href="Testable.html">Testable</a><div class="index-item-comment"><p>Things we can compare in tests</p>
+<p>This module contains the <code>Testable&lt;A&gt;</code> abstraction, which bundles
+<code>toText</code> and <code>equals</code> for a type <code>A</code> so we can use them as &quot;expected&quot;
+values in tests.
+It also contains a few helpers to build <code>Testable</code>'s for compound types
+like Arrays and Optionals. If you want to test your own objects or control
+how things are printed and compared in your own tests you'll need to create
+your own <code>Testable</code>'s.</p>
+<pre class="motoko"><code class="motoko">import T &quot;Testable&quot;;
+
+type Person = { name : Text, surname : ?Text };
+// Helper
+let optText : Testable&lt;(?Text)&gt; = T.optionalTestable(T.textTestable)
+let testablePerson : Testable&lt;Person&gt; = {
+   display = func (person : Person) : Text =
+       person.name # &quot; &quot; #
+       optText.display(person.surname)
+   equals = func (person1 : Person, person2 : Person) : Bool =
+       person1.name == person2.name and
+       optText.equals(person1.surname, person2.surname)
+}</code></pre></div></li><li class="index-item"><a class="index-item-link" href="matchers/Hashmap.html">matchers/Hashmap</a><div class="index-item-comment"><p>Matchers for Hashmaps</p>
+<p>This module contains utility matchers that make it easier
+to write assertions that involve Hashmaps.</p>
+</div></li></ul></div></html>
