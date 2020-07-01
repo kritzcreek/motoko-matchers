@@ -37,7 +37,6 @@ jobs:
         ./run_test.sh
         popd
     - name: "docs"
-      if: github.ref == 'refs/heads/master' && github.base_ref != 'refs/heads/next-moc'
       run: ./bin/mo-doc
     - name: Upload docs
       uses: JamesIves/github-pages-deploy-action@releases/v3
