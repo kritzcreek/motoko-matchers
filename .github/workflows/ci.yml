@@ -7,6 +7,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: cachix/install-nix-action@v10
+    - name: Check if Git tag exists
+      run: echo "::set-env name=HEAD_TAG::$(git tag --points-at HEAD)"
     - name: "install dependencies"
       run: |
         sudo -H /nix/var/nix/profiles/default/bin/nix-channel --list
@@ -37,3 +39,10 @@ jobs:
     - name: "docs"
       if: github.ref == 'refs/heads/master' && github.base_ref != 'refs/heads/next-moc'
       run: ./bin/mo-doc
+    - name: Upload docs
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      if: env.HEAD_TAG != ''
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: docs/ # The folder the action should deploy.      
