@@ -9,6 +9,7 @@ jobs:
   docs:
     runs-on: ubuntu-18.04
     steps:
+    - uses: actions/checkout@v1
     - name: "install dfx"
       run: |
        wget https://sdk.dfinity.org/install.sh
