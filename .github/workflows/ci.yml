@@ -27,9 +27,13 @@ jobs:
        chmod +x /home/runner/bin/vessel
     - name: "Work around private base"
       run: |
-        mkdir -p test/.vessel/base/dfx-0.5.10 && ln -s $(dfx cache show)/base test/.vessel/base/dfx-0.5.10/src
+        mkdir -p test/.vessel/base/dfx-0.5.10
+        ln -s $(dfx cache show)/base test/.vessel/base/dfx-0.5.10/src
     - name: "test"
-      run: make -C test
+      run: |
+        pushd test
+        ./run_test.sh
+        popd
     - name: "docs"
       if: github.ref == 'refs/heads/master' && github.base_ref != 'refs/heads/next-moc'
       run: ./bin/mo-doc
