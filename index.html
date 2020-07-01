@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html>
-  <head title="Motoko docs"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head>
-  <div class="index-container"><h1 class="index-header">Index of modules</h1><ul class="index-listing"><li class="index-item"><a class="index-item-link" href="Matchers.html">Matchers</a><div class="index-item-comment"><p>Composable assertions</p>
+<html><head title="Motoko docs"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><div class="index-container"><h1 class="index-header">Index of modules</h1><ul class="index-listing"><li class="index-item"><a class="index-item-link" href="Matchers.html">Matchers</a><div class="index-item-comment"><p>Composable assertions</p>
 <p>This module contains functions for building and combining <code>Matcher</code>s that
 can be used to build up assertions for testing.</p>
-<pre class="motoko"><code class="motoko">import M &quot;Matchers&quot;;
-import T &quot;Testable&quot;;
+<pre class="motoko"><code class="motoko">import M &quot;mo:matchers/Matchers&quot;;
+import T &quot;mo:matchers/Testable&quot;;
 
 assertThat(5 + 5, M.equals(T.nat(10)));
 assertThat(5 + 5, M.allOf&lt;Nat&gt;([M.greaterThan(8), M.lessThan(12)]));
 assertThat([1, 2], M.array([M.equals(T.nat(1)), M.equals(T.nat(2))]));</code></pre></div></li><li class="index-item"><a class="index-item-link" href="Suite.html">Suite</a><div class="index-item-comment"><p>A simple test runner</p>
 <p>The functions in this module let you build up trees of tests, and run them.</p>
-</div></li><li class="index-item"><a class="index-item-link" href="Testable.html">Testable</a><div class="index-item-comment"><p>Things we can compare in tests</p>
+<pre class="motoko"><code class="motoko">import M &quot;mo:matchers/Matchers&quot;;
+import T &quot;mo:matchers/Testable&quot;;
+import Suite &quot;mo:matchers/Suite&quot;;
+
+let suite = Suite.suite(&quot;My test suite&quot;, [
+    Suite.suite(&quot;Nat tests&quot;, [
+        Suite.test(&quot;10 is 10&quot;, 10, M.equals(T.nat(10))),
+        Suite.test(&quot;5 is greater than three&quot;, 5, M.greaterThan&lt;Nat&gt;(3)),
+    ])
+]);
+Suite.run(suite);</code></pre></div></li><li class="index-item"><a class="index-item-link" href="Testable.html">Testable</a><div class="index-item-comment"><p>Things we can compare in tests</p>
 <p>This module contains the <code>Testable&lt;A&gt;</code> abstraction, which bundles
 <code>toText</code> and <code>equals</code> for a type <code>A</code> so we can use them as &quot;expected&quot;
 values in tests.
@@ -19,7 +27,7 @@ It also contains a few helpers to build <code>Testable</code>'s for compound typ
 like Arrays and Optionals. If you want to test your own objects or control
 how things are printed and compared in your own tests you'll need to create
 your own <code>Testable</code>'s.</p>
-<pre class="motoko"><code class="motoko">import T &quot;Testable&quot;;
+<pre class="motoko"><code class="motoko">import T &quot;mo:matchers/Testable&quot;;
 
 type Person = { name : Text, surname : ?Text };
 // Helper
