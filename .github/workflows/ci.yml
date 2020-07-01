@@ -6,16 +6,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
-    - uses: cachix/install-nix-action@v10
     - name: Check if Git tag exists
       run: echo "::set-env name=HEAD_TAG::$(git tag --points-at HEAD)"
-    - name: "install dependencies"
+    - name: "install wasmtime"
       run: |
-        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --list
-        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
-        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --update
-        ls -l /nix/var/nix/profiles/per-user/root/channels/
-        nix-env --install --attr wasmtime --file '<nixpkgs>'
+       wget https://github.com/bytecodealliance/wasmtime/releases/download/v0.18.0/wasmtime-v0.18.0-x86_64-linux.tar.xz
+       tar xf wasmtime-v0.18.0-x86_64-linux.tar.xz
+       cp wasmtime-v0.18.0-x86_64-linux/wasmtime /home/runner/bin/wasmtime
     - name: "install dfx"
       run: |
        wget https://sdk.dfinity.org/install.sh
