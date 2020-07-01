@@ -4,10 +4,6 @@ set -eo pipefail
 
 ../bin/moc $(vessel --package-set ../package-set.json sources) -wasi-system-api Test.mo
 
-echo "Created Test.wasm"
-ls -la
-wasmtime Test.wasm
-
 if wasmtime Test.wasm ; then
     echo "Tests failed to fail"
     exit 1
