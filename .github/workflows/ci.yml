@@ -25,6 +25,9 @@ jobs:
       run: |
        wget --output-document /home/runner/bin/vessel https://github.com/kritzcreek/vessel/releases/download/v0.4.1/vessel-linux64
        chmod +x /home/runner/bin/vessel
+    - name: "Work around private base"
+      run: |
+        mkdir -p test/.vessel/base/dfx-0.5.10 && ln -s $(dfx cache show)/base test/.vessel/base/dfx-0.5.10/src
     - name: "test"
       run: make -C test
     - name: "docs"
