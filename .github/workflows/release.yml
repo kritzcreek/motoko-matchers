@@ -1,12 +1,14 @@
-name: "build"
+name: "release"
 on:
   push:
     branches:
       - master
     tags:        
       - "*"
-
 jobs:
+  docs:
+    runs-on: ubuntu-18.04
+    steps:
     - name: "install dfx"
       run: |
        wget https://sdk.dfinity.org/install.sh
