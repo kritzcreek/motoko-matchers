@@ -1,0 +1,23 @@
+name: "build"
+on:
+  push:
+    branches:
+      - master
+    tags:        
+      - *
+
+jobs:
+    - name: "install dfx"
+      run: |
+       wget https://sdk.dfinity.org/install.sh
+       yes Y | DFX_VERSION=0.5.10 sh install.sh
+       echo "::add-path::/home/runner/bin"
+    - name: "dfx cache install"
+      run: dfx cache install
+    - name: "Create docs"
+      run: ./bin/mo-doc
+    - name: Upload docs
+      uses: actions/upload-artifact@v1
+      with:
+        name: Library documentation
+        path: docs/

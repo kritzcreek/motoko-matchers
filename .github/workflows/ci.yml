@@ -1,0 +1,32 @@
+name: "build"
+on: push
+jobs:
+  tests:
+    if: github.ref != 'refs/heads/next-moc' && github.base_ref != 'refs/heads/next-moc'
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: cachix/install-nix-action@v10
+    - name: "install dependencies"
+      run: |
+        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --list
+        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
+        sudo -H /nix/var/nix/profiles/default/bin/nix-channel --update
+        ls -l /nix/var/nix/profiles/per-user/root/channels/
+        nix-env --install --attr wasmtime --file '<nixpkgs>'
+    - name: "install dfx"
+      run: |
+       wget https://sdk.dfinity.org/install.sh
+       yes Y | DFX_VERSION=0.5.10 sh install.sh
+       echo "::add-path::/home/runner/bin"
+    - name: "dfx cache install"
+      run: dfx cache install
+    - name: "install vessel"
+      run: |
+       wget --output-document /home/runner/bin/vessel https://github.com/kritzcreek/vessel/releases/download/v0.4.1/vessel-linux64
+       chmod +x /home/runner/bin/vessel
+    - name: "test"
+      run: make -C test
+    - name: "docs"
+      if: github.ref == 'refs/heads/master' && github.base_ref != 'refs/heads/next-moc'
+      run: ./bin/mo-doc
