@@ -8,7 +8,7 @@
 /// how things are printed and compared in your own tests you'll need to create
 /// your own `Testable`'s.
 /// ```motoko
-/// import T "Testable";
+/// import T "mo:matchers/Testable";
 ///
 /// type Person = { name : Text, surname : ?Text };
 /// // Helper

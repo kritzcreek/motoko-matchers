@@ -3,8 +3,8 @@
 /// This module contains functions for building and combining `Matcher`s that
 /// can be used to build up assertions for testing.
 /// ```motoko
-/// import M "Matchers";
-/// import T "Testable";
+/// import M "mo:matchers/Matchers";
+/// import T "mo:matchers/Testable";
 ///
 /// assertThat(5 + 5, M.equals(T.nat(10)));
 /// assertThat(5 + 5, M.allOf<Nat>([M.greaterThan(8), M.lessThan(12)]));

@@ -50,7 +50,3 @@ let suite = Suite.suite("Testing the testing", [
 ]);
 
 Suite.run(suite)
-
-
-
-
