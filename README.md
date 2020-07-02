@@ -1,3 +1,4 @@
+![build](https://github.com/kritzcreek/motoko-matchers/workflows/build/badge.svg)
 # motoko-matchers
 
 Composable assertions for unit testing
