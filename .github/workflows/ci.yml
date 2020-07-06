@@ -2,7 +2,6 @@ name: "build"
 on: push
 jobs:
   tests:
-    if: github.ref != 'refs/heads/next-moc' && github.base_ref != 'refs/heads/next-moc'
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
