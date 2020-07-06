@@ -97,9 +97,16 @@ module {
 
     /// Constructs a single test by matching the given `item` against a `matcher`.
     public func test<A>(testName : Text, item : A, matcher : Matchers.Matcher<A>) : Suite {
+        testLazy(testName, func(): A = item, matcher)
+    };
+
+    /// Like `test`, but accepts a thunk `mkItem` that creates the value to match against.
+    /// Use this to delay the evaluation of the to be matched value until the tests actually run.
+    public func testLazy<A>(testName : Text, mkItem : () -> A, matcher : Matchers.Matcher<A>) : Suite {
         #test({
             name = testName;
-            test = func () : ?Matchers.Description =
+            test = func () : ?Matchers.Description {
+                let item = mkItem();
                 if (matcher.matches(item)) {
                     null
                 } else {
@@ -107,6 +114,7 @@ module {
                     matcher.describeMismatch(item, description);
                     ?(description)
                 };
+            }
         })
     };
 }
