@@ -17,6 +17,7 @@ let suite = Suite.suite("Testing the testing", [
     Suite.suite("equality", [
         Suite.test("nats1", 10, equals10),
         Suite.test("nats2", 20, equals10),
+        Suite.test("Chars", 'a', Matchers.equals(T.char('b'))),
     ]),
     Suite.testLazy("Lazy test execution", func(): Nat = 20, equals10),
     Suite.test("Described as", 20, Matchers.describedAs("20's a lot mate.", equals10)),

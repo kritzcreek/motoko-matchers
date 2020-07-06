@@ -27,6 +27,7 @@ import Bool "mo:base/Bool";
 import Int "mo:base/Int";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
+import Prim "mo:prim";
 
 module {
     /// Packs up all the functions we need to compare and display values under test
@@ -85,6 +86,17 @@ module {
         item = n;
         display = boolTestable.display;
         equals = boolTestable.equals;
+    };
+
+    public let charTestable : Testable<Char> = {
+        display = func (n : Char) : Text = "'" # Prim.charToText n # "'";
+        equals = func (n1 : Char, n2 : Char) : Bool = n1 == n2
+    };
+
+    public func char(n : Char) : TestableItem<Char> = {
+        item = n;
+        display = charTestable.display;
+        equals = charTestable.equals;
     };
 
     public func arrayTestable<A>(testableA : Testable<A>) : Testable<[A]> = {
