@@ -1,7 +1,7 @@
 [
   {
     "name": "base",
-    "repo": "git@github.com:dfinity-lab/motoko-base.git",
+    "repo": "https://github.com/dfinity/motoko-base",
     "version": "dfx-0.5.10",
     "dependencies": []
   }
