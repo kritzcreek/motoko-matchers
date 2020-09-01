@@ -9,6 +9,8 @@ jobs:
       run: echo "::set-env name=HEAD_TAG::$(git tag --points-at HEAD)"
     - name: "install wasmtime"
       run: |
+       mkdir /home/runner/bin
+       echo "::add-path::/home/runner/bin"
        wget https://github.com/bytecodealliance/wasmtime/releases/download/v0.18.0/wasmtime-v0.18.0-x86_64-linux.tar.xz
        tar xf wasmtime-v0.18.0-x86_64-linux.tar.xz
        cp wasmtime-v0.18.0-x86_64-linux/wasmtime /home/runner/bin/wasmtime
