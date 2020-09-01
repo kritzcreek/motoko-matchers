@@ -11,4 +11,4 @@ Check out `test/Test.mo`
 ## Documentation
 Documentation for the latest release can be found at https://kritzcreek.github.io/motoko-matchers.
 
-If you'd like to generate documentation locally run `./bin/mo-doc && firefox docs/index.html`.
+If you'd like to generate documentation locally run `$(vessel bin)/mo-doc && firefox docs/index.html`.
