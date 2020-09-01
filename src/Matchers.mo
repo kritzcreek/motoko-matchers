@@ -36,6 +36,18 @@ module {
         }
     };
 
+    /// Matches an `item` against a matcher and returns `null` in case the
+    /// match succeeds and `?errorMessage` if it fails.
+    public func attempt<A>(item : A, matcher : Matcher<A>) : ?Text {
+        if (matcher.matches(item)) {
+            null
+        } else {
+            let description = Description();
+            matcher.describeMismatch(item, description);
+            ?(description.toText())
+        }
+    };
+
     /// Turns a `Matcher` for `A`s into a `Matcher` for `B`s by using `f` as an adapter.
     // TODO Maybe call this adapt?
     public func contramap<A, B>(matcher : Matcher<A>, f : B -> A) : Matcher<B> = {
