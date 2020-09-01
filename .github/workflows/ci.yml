@@ -7,13 +7,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: Check if Git tag exists
       run: echo "::set-env name=HEAD_TAG::$(git tag --points-at HEAD)"
-    - name: "install dfx"
-      run: |
-       wget https://sdk.dfinity.org/install.sh
-       yes Y | DFX_VERSION=0.5.10 sh install.sh
-       echo "::add-path::/home/runner/bin"
-    - name: "dfx cache install"
-      run: dfx cache install
     - name: "install wasmtime"
       run: |
        wget https://github.com/bytecodealliance/wasmtime/releases/download/v0.18.0/wasmtime-v0.18.0-x86_64-linux.tar.xz
@@ -21,7 +14,7 @@ jobs:
        cp wasmtime-v0.18.0-x86_64-linux/wasmtime /home/runner/bin/wasmtime
     - name: "install vessel"
       run: |
-       wget --output-document /home/runner/bin/vessel https://github.com/kritzcreek/vessel/releases/download/v0.4.1/vessel-linux64
+       wget --output-document /home/runner/bin/vessel https://github.com/kritzcreek/vessel/releases/download/v0.5.1-alpha/vessel-linux64
        chmod +x /home/runner/bin/vessel
     - name: "test"
       run: |
