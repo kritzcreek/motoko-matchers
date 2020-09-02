@@ -38,13 +38,13 @@ module {
 
     /// Matches an `item` against a matcher and returns `null` in case the
     /// match succeeds and `?errorMessage` if it fails.
-    public func attempt<A>(item : A, matcher : Matcher<A>) : ?Text {
+    public func attempt<A>(item : A, matcher : Matcher<A>) : { #success; #fail : Text } {
         if (matcher.matches(item)) {
-            null
+            #success
         } else {
             let description = Description();
             matcher.describeMismatch(item, description);
-            ?(description.toText())
+            #fail(description.toText())
         }
     };
 
