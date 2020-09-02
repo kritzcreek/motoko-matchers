@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html><head title="Doc"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><body><nav class="sidebar"><h3>Modules</h3><ul><li><li><a href="Canister.html">Canister</a></li></li><li><li><a href="Matchers.html">Matchers</a></li></li><li><li><a href="Suite.html">Suite</a></li></li><li><li><a href="Testable.html">Testable</a></li></li><li><li><a href="matchers/Hashmap.html">matchers/Hashmap</a></li></li></ul><h3>Declarations</h3><ul><li><li><a href="#type.Protocol">Protocol</a></li></li><li><li><a href="#type.TestResult">TestResult</a></li></li><li><li><a href="#class.Tester">Tester</a></li></li></ul></nav><div class="documentation"><h1>Canister</h1><p>Unit testing for canisters</p>
+<p>The <code>Tester</code> class in this module can be used to define unit tests for canisters.</p>
+<div class="declaration"><h4 class="type-declaration" id="type.Protocol"><span class="keyword">type </span><span class="type">Protocol</span> = {#start : <span class="type">Nat</span>; #cont : [<span class="type">Text</span>]; #done : [<span class="type">Text</span>]}</h4><p></p></div><div class="declaration"><h4 class="type-declaration" id="type.TestResult"><span class="keyword">type </span><span class="type">TestResult</span> = {#success; #fail : <span class="type">Text</span>}</h4><p></p></div><div class="declaration"><h4 class="class-declaration" id="class.Tester"><span class="keyword">class </span><span class="classname">Tester</span>()</h4><div class="declaration"><h4 class="function" id="value.should"><code><span class="keyword">public func </span><span class="fnname">should</span>(<span class="parameter">name</span> : <span class="type">Text</span>, <span class="parameter">test</span> : () -&gt; <span class="keyword">async </span><span class="type">TestResult</span>)</code></h4><p><p>Registers a test. You can use <a href="Matchers.html/#value.attempt"><code>attempt</code></a>
+to use a <a href="Matchers.html/#type.Matcher"><code>Matcher</code></a> to produce a
+<a href="#type.TestResult"><code>TestResult</code></a>.</p>
+</p></div><div class="declaration"><h4 class="function" id="value.shouldFailTo"><code><span class="keyword">public func </span><span class="fnname">shouldFailTo</span>(<span class="parameter">name</span> : <span class="type">Text</span>, <span class="parameter">test</span> : () -&gt; <span class="keyword">async </span>())</code></h4><p><p>Registers a test that should throw an exception.</p>
+</p></div><div class="declaration"><h4 class="function" id="value.run"><code><span class="keyword">public func </span><span class="fnname">run</span>() : <span class="keyword">async </span><span class="type">Protocol</span></code></h4><p><p>You must call this as the last thing in your unit test.</p>
+</p></div><p><p>Instantiate one of these on canister initialization. Then you can use it to
+register your tests and it will take care of executing them in the right
+batch sizes. The test runner will keep calling your <code>test</code> function over and
+over, so make sure to not do any work outside the registered tests.</p>
+<pre class="motoko"><code class="motoko">import Canister &quot;canister:YourCanisterNameHere&quot;;
+import C &quot;mo:matchers/Canister&quot;;
+import M &quot;mo:matchers/Matchers&quot;;
+import T &quot;mo:matchers/Testable&quot;;
+
+actor {
+    let it = C.Tester({ batchSize = 8 });
+    public shared func test() : async C.Protocol {
+
+        it.should(&quot;greet me&quot;, func () : async C.TestResult = async {
+          let greeting = await Canister.greet(&quot;Christoph&quot;);
+          M.attempt(greeting, M.equals(T.text(&quot;Hello, Christoph!&quot;)))
+        });
+
+        it.shouldFailTo(&quot;greet him-whose-name-shall-not-be-spoken&quot;, func () : async () = async {
+          let greeting = await Canister.greet(&quot;Voldemort&quot;);
+          ignore greeting
+        });
+
+        await it.run()
+    }
+}</code></pre></p></div></div></body></html>
