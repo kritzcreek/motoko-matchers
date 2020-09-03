@@ -5,11 +5,15 @@
 to use a <a href="Matchers.html/#type.Matcher"><code>Matcher</code></a> to produce a
 <a href="#type.TestResult"><code>TestResult</code></a>.</p>
 </p></div><div class="declaration"><h4 class="function" id="value.shouldFailTo"><code><span class="keyword">public func </span><span class="fnname">shouldFailTo</span>(<span class="parameter">name</span> : <span class="type">Text</span>, <span class="parameter">test</span> : () -&gt; <span class="keyword">async </span>())</code></h4><p><p>Registers a test that should throw an exception.</p>
+</p></div><div class="declaration"><h4 class="function" id="value.runAll"><code><span class="keyword">public func </span><span class="fnname">runAll</span>() : <span class="keyword">async </span><span class="type">Text</span></code></h4><p><p>Runs all your tests in one go and returns a summary Text. If calling
+this runs out of gas, try using <code>run</code> with a configured <code>batchSize</code>.</p>
 </p></div><div class="declaration"><h4 class="function" id="value.run"><code><span class="keyword">public func </span><span class="fnname">run</span>() : <span class="keyword">async </span><span class="type">Protocol</span></code></h4><p><p>You must call this as the last thing in your unit test.</p>
 </p></div><p><p>Instantiate one of these on canister initialization. Then you can use it to
-register your tests and it will take care of executing them in the right
-batch sizes. The test runner will keep calling your <code>test</code> function over and
-over, so make sure to not do any work outside the registered tests.</p>
+register your tests and it will take care of running them.</p>
+<p>Use <code>runAll</code> for simple setups and <code>run</code> once that stops working.</p>
+<p>When using <code>run</code> the <code>Tester</code> will execute your tests in the right batch
+sizes. It will keep calling your <code>test</code> function over and over, so make sure
+to not do any work outside the registered tests.</p>
 <pre class="motoko"><code class="motoko">import Canister &quot;canister:YourCanisterNameHere&quot;;
 import C &quot;mo:matchers/Canister&quot;;
 import M &quot;mo:matchers/Matchers&quot;;
@@ -17,7 +21,7 @@ import T &quot;mo:matchers/Testable&quot;;
 
 actor {
     let it = C.Tester({ batchSize = 8 });
-    public shared func test() : async C.Protocol {
+    public shared func test() : async Text {
 
         it.should(&quot;greet me&quot;, func () : async C.TestResult = async {
           let greeting = await Canister.greet(&quot;Christoph&quot;);
@@ -29,6 +33,7 @@ actor {
           ignore greeting
         });
 
-        await it.run()
+        await it.runAll()
+        // await it.run()
     }
 }</code></pre></p></div></div></body></html>
