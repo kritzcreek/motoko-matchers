@@ -3,6 +3,7 @@
 /// The `Tester` class in this module can be used to define unit tests for canisters.
 import Buffer "mo:base/Buffer";
 import List "mo:base/List";
+import Nat "mo:base/Nat";
 import M "Matchers";
 
 module {
@@ -13,9 +14,13 @@ public type TestResult = { #success; #fail : Text };
 type Test = (Text, () -> async TestResult);
 
 /// Instantiate one of these on canister initialization. Then you can use it to
-/// register your tests and it will take care of executing them in the right
-/// batch sizes. The test runner will keep calling your `test` function over and
-/// over, so make sure to not do any work outside the registered tests.
+/// register your tests and it will take care of running them.
+///
+/// Use `runAll` for simple setups and `run` once that stops working.
+///
+/// When using `run` the `Tester` will execute your tests in the right batch
+/// sizes. It will keep calling your `test` function over and over, so make sure
+/// to not do any work outside the registered tests.
 ///
 /// ```motoko
 /// import Canister "canister:YourCanisterNameHere";
@@ -25,7 +30,7 @@ type Test = (Text, () -> async TestResult);
 ///
 /// actor {
 ///     let it = C.Tester({ batchSize = 8 });
-///     public shared func test() : async C.Protocol {
+///     public shared func test() : async Text {
 ///
 ///         it.should("greet me", func () : async C.TestResult = async {
 ///           let greeting = await Canister.greet("Christoph");
@@ -37,7 +42,8 @@ type Test = (Text, () -> async TestResult);
 ///           ignore greeting
 ///         });
 ///
-///         await it.run()
+///         await it.runAll()
+///         // await it.run()
 ///     }
 /// }
 /// ```
@@ -64,6 +70,43 @@ public class Tester({ batchSize : Nat }) {
               #success
           }
         }), tests)
+    };
+
+    /// Runs all your tests in one go and returns a summary Text. If calling
+    /// this runs out of gas, try using `run` with a configured `batchSize`.
+    public func runAll() : async Text {
+        running := true;
+        var allTests = List.reverse(tests);
+        var result = "";
+        var failed = 0;
+        var testCount = List.size(allTests);
+        label l loop {
+            switch allTests {
+                case null break l;
+                case (?((name, test), tl)) {
+                    allTests := tl;
+                    try {
+                        result #= switch (await test()) {
+                          case (#success) "\"" # name # "\"" # " succeeded.\n";
+                          case (#fail(msg)) {
+                              failed += 1;
+                              "\"" # name # "\"" # " failed: " # msg # "\n"
+                          };
+                        };
+                    } catch _ {
+                        failed += 1;
+                        result #= "\"" # name # "\"" # "failed with an unexpected trap." # "\n";
+                    }
+                };
+            }
+        };
+
+        if (failed == 0) {
+            result #= "Success! "
+        } else {
+            result #= "Failure! "
+        };
+        result # Nat.toText(testCount - failed) # "/" # Nat.toText(testCount) # " succeeded."
     };
 
     /// You must call this as the last thing in your unit test.
