@@ -47,7 +47,7 @@ type Test = (Text, () -> async TestResult);
 ///     }
 /// }
 /// ```
-public class Tester({ batchSize : Nat }) {
+public class Tester(options : { batchSize : Nat }) {
     var tests : List.List<Test> = List.nil();
     var running : Bool = false;
 
@@ -91,7 +91,7 @@ public class Tester({ batchSize : Nat }) {
                           case (#fail(msg)) {
                               failed += 1;
                               "\"" # name # "\"" # " failed: " # msg # "\n"
-                          };
+                          }
                         };
                     } catch _ {
                         failed += 1;
@@ -116,8 +116,8 @@ public class Tester({ batchSize : Nat }) {
             tests := List.reverse(tests);
             return #start(List.size(tests))
         };
-        let results : Buffer.Buffer<Text> = Buffer.Buffer(batchSize);
-        var capacity = batchSize;
+        let results : Buffer.Buffer<Text> = Buffer.Buffer(options.batchSize);
+        var capacity = options.batchSize;
         while(capacity > 0) {
             capacity -= 1;
             switch tests {
