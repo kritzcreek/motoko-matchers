@@ -231,7 +231,7 @@ module {
             switch (testable.item) {
                 case null ();
                 case (?i) description.appendText("expected `null`, but got " # testable.display(?i));
-            }
+            };
     };
 
 }
