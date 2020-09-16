@@ -123,6 +123,14 @@ module {
         };
     };
 
+    /// Matches values for being in inclusive range `[lower .. upper]`
+    public func inRange<A <: Int>(lower : Int, upper : Int) : Matcher<A> = {
+        matches = func (item : A) : Bool = lower <= item and item <= upper;
+        describeMismatch = func (item : A, description : Description) = {
+            description.appendText(Int.toText(expected) # " was expected to be in range [" # Int.toText(lower) # " .. " # Int.toText(upper) # "]");
+        };
+    };
+
     /// Matches if all matchers match, short circuits (like `and`)
     public func allOf<A>(matchers : [Matcher<A>]) : Matcher<A> = {
         matches = func (item : A) : Bool {
