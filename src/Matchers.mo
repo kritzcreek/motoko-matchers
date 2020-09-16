@@ -53,7 +53,7 @@ module {
     public func contramap<A, B>(matcher : Matcher<A>, f : B -> A) : Matcher<B> = {
         matches = func (item : B) : Bool = matcher.matches(f(item));
         describeMismatch = func (item : B, description : Description) =
-            matcher.describeMismatch(f(item), description)
+            matcher.describeMismatch(f(item), description);
     };
 
     /// `Matcher`s describe match failures by inserting them into a `Description`.
@@ -71,7 +71,7 @@ module {
     /// Always matches, useful if you don’t care what the object under test is
     public func anything<A>() : Matcher<A> = {
         matches = func (item : A) : Bool = true;
-        describeMismatch = func (item : A, description : Description) = ()
+        describeMismatch = func (item : A, description : Description) = ();
     };
 
     /// Decorator that allows adding a custom failure description
