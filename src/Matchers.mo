@@ -52,9 +52,8 @@ module {
     // TODO Maybe call this adapt?
     public func contramap<A, B>(matcher : Matcher<A>, f : B -> A) : Matcher<B> = {
         matches = func (item : B) : Bool = matcher.matches(f(item));
-        describeMismatch = func (item : B, description : Description) {
+        describeMismatch = func (item : B, description : Description) =
             matcher.describeMismatch(f(item), description)
-        }
     };
 
     /// `Matcher`s describe match failures by inserting them into a `Description`.
@@ -72,63 +71,56 @@ module {
     /// Always matches, useful if you don’t care what the object under test is
     public func anything<A>() : Matcher<A> = {
         matches = func (item : A) : Bool = true;
-        describeMismatch = func (item : A, description : Description) = ();
+        describeMismatch = func (item : A, description : Description) = ()
     };
 
     /// Decorator that allows adding a custom failure description
     public func describedAs<A>(msg : Text, matcher : Matcher<A>) : Matcher<A> = {
         matches = func (item : A) : Bool = matcher.matches(item);
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(msg);
-        };
     };
 
     /// Matches values equal to an expected `Testable`
     public func equals<A>(expected : T.TestableItem<A>) : Matcher<A> = {
         matches = func (item : A) : Bool = expected.equals(expected.item, item);
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(expected.display(item) # " was expected to be " # expected.display(expected.item));
-        };
     };
 
     /// Matches values greater than `expected`
     public func greaterThan<A <: Int>(expected : Int) : Matcher<A> = {
         matches = func (item : A) : Bool = item > expected;
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(Int.toText(expected) # " was expected to be greater than " # Int.toText(item));
-        };
     };
 
     /// Matches values greater than or equal to `expected`
     public func greaterThanOrEqual<A <: Int>(expected : Int) : Matcher<A> = {
         matches = func (item : A) : Bool = item >= expected;
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(Int.toText(expected) # " was expected to be greater than or equal to " # Int.toText(item));
-        };
     };
 
     /// Matches values less than `expected`
     public func lessThan<A <: Int>(expected : Int) : Matcher<A> = {
         matches = func (item : A) : Bool = item < expected;
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(Int.toText(expected) # " was expected to be less than " # Int.toText(item));
-        };
     };
 
     /// Matches values less than or equal to `expected`
     public func lessThanOrEqual<A <: Int>(expected : Int) : Matcher<A> = {
         matches = func (item : A) : Bool = item <= expected;
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) =
             description.appendText(Int.toText(expected) # " was expected to be less than or equal to " # Int.toText(item));
-        };
     };
 
     /// Matches values for being in inclusive range `[lower .. upper]`
     public func inRange<A <: Int>(lower : Int, upper : Int) : Matcher<A> = {
         matches = func (item : A) : Bool = lower <= item and item <= upper;
-        describeMismatch = func (item : A, description : Description) = {
-            description.appendText(Int.toText(expected) # " was expected to be in range [" # Int.toText(lower) # " .. " # Int.toText(upper) # "]");
-        };
+        describeMismatch = func (item : A, description : Description) =
+            description.appendText(Int.toText(item) # " was expected to be in range [" # Int.toText(lower) # " .. " # Int.toText(upper) # "]");
     };
 
     /// Matches if all matchers match, short circuits (like `and`)
@@ -141,7 +133,7 @@ module {
             };
             return true;
         };
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) {
             var first = true;
             for (matcher in matchers.vals()) {
                 if (not matcher.matches(item)) {
@@ -166,7 +158,7 @@ module {
             };
             return false;
         };
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) {
             var first = true;
             for (matcher in matchers.vals()) {
                 if (not matcher.matches(item)) {
@@ -184,7 +176,7 @@ module {
     /// Matches if the wrapped matcher doesn’t match and vice versa
     public func not_<A>(matcher : Matcher<A>) : Matcher<A> = {
         matches = func (item : A) : Bool = not matcher.matches(item);
-        describeMismatch = func (item : A, description : Description) = {
+        describeMismatch = func (item : A, description : Description) {
             // Do I need to return a `Matcher<Testable<A>>` instead?
             // Would be a little unfortunate
             description.appendText("Shouldn't have matched.");
@@ -204,7 +196,7 @@ module {
             };
             return true;
         };
-        describeMismatch = func (items : [A], description : Description) = {
+        describeMismatch = func (items : [A], description : Description) {
             if (items.size() != matchers.size()) {
                 description.appendText(
                     "Length mismatch between " #
@@ -228,20 +220,18 @@ module {
     /// Tests that a value is not-null
     public func isSome<A>() : Matcher<?A> = {
         matches = func (item : ?A) : Bool = Option.isSome(item);
-        describeMismatch = func (item : ?A, description : Description) {
+        describeMismatch = func (item : ?A, description : Description) =
             description.appendText("expected some value, but got `null`");
-        };
     };
 
     /// Tests that a value is null
     public func isNull<A>() : Matcher<T.TestableItem<?A>> = {
         matches = func (testable : T.TestableItem<?A>) : Bool = Option.isNull(testable.item);
-        describeMismatch = func (testable : T.TestableItem<?A>, description : Description) {
+        describeMismatch = func (testable : T.TestableItem<?A>, description : Description) =
             switch (testable.item) {
                 case null ();
                 case (?i) description.appendText("expected `null`, but got " # testable.display(?i));
             }
-        };
     };
 
 }
