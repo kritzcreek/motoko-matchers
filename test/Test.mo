@@ -4,7 +4,6 @@ import Matchers "../src/Matchers";
 import HMMatchers "../src/matchers/Hashmap";
 import T "../src/Testable";
 import Suite "../src/Suite";
-import Canister "../src/Canister"; // Just here to make sure CI typechecks the Canister module
 
 let equals10 = Matchers.equals(T.nat(10));
 let equals20 = Matchers.equals(T.nat(20));
