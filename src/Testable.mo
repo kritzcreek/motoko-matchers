@@ -163,7 +163,7 @@ module {
         };
     };
 
-    func resultTestable<R, E>(
+    public func resultTestable<R, E>(
         rTestable : Testable<R>,
         eTestable : Testable<E>
     ) : Testable<Result.Result<R, E>> = {
@@ -178,7 +178,7 @@ module {
         };
     };
 
-    func result<R, E>(
+    public func result<R, E>(
       rTestable : Testable<R>,
       eTestable : Testable<E>,
       x : Result.Result<R, E>
