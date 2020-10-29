@@ -27,6 +27,7 @@ import Bool "mo:base/Bool";
 import Int "mo:base/Int";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
+import Result "mo:base/Result";
 import Prim "mo:prim";
 
 module {
@@ -160,6 +161,34 @@ module {
             display = testableOA.display;
             equals = testableOA.equals;
         };
+    };
+
+    func resultTestable<R, E>(
+        rTestable : Testable<R>,
+        eTestable : Testable<E>
+    ) : Testable<Result.Result<R, E>> = {
+        display = func (r : Result.Result<R, E>) : Text = switch r {
+            case (#ok ok) "#ok(" # rTestable.display(ok) # ")";
+            case (#err err) "#err(" # eTestable.display(err) # ")";
+        };
+        equals = func (r1 : Result.Result<R, E>, r2 : Result.Result<R, E>) : Bool = switch (r1, r2) {
+            case (#ok ok1, #ok ok2) rTestable.equals(ok1, ok2);
+            case (#err err1, #err err2) eTestable.equals(err1, err2);
+            case _ false;
+        };
+    };
+
+    func result<R, E>(
+      rTestable : Testable<R>,
+      eTestable : Testable<E>,
+      x : Result.Result<R, E>
+    ) : TestableItem<Result.Result<R, E>> {
+        let resTestable = resultTestable(rTestable, eTestable);
+        {
+            display = resTestable.display;
+            equals = resTestable.equals;
+            item = x;
+        }
     };
 
     public func tuple2Testable<A, B>(ta : Testable<A>, tb : Testable<B>) : Testable<(A, B)> = {
