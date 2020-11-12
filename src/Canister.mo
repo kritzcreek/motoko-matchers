@@ -55,13 +55,13 @@ public class Tester(options : { batchSize : Nat }) {
     /// to use a [`Matcher`](Matchers.html/#type.Matcher) to produce a
     /// [`TestResult`](#type.TestResult).
     public func should(name : Text, test : () -> async TestResult) {
-        if(running) return;
+        if running { return };
         tests := List.push((name, test), tests);
     };
 
     /// Registers a test that should throw an exception.
     public func shouldFailTo(name : Text, test : () -> async ()) {
-        if(running) return;
+        if running { return };
         tests := List.push((name, func () : async TestResult = async {
           try {
             let testResult = await test();
@@ -82,11 +82,13 @@ public class Tester(options : { batchSize : Nat }) {
         var testCount = List.size(allTests);
         label l loop {
             switch allTests {
-                case null break l;
-                case (?((name, test), tl)) {
+                case null {
+                    break l
+                };
+                case ?((name, test), tl) {
                     allTests := tl;
                     try {
-                        result #= switch (await test()) {
+                        result #= switch await test() {
                             case (#success) {
                                 "\"" # name # "\"" # " succeeded.\n"
                             };
@@ -103,7 +105,7 @@ public class Tester(options : { batchSize : Nat }) {
             }
         };
 
-        if (failed == 0) {
+        if failed == 0 {
             result #= "Success! "
         } else {
             result #= "Failure! "
@@ -113,28 +115,28 @@ public class Tester(options : { batchSize : Nat }) {
 
     /// You must call this as the last thing in your unit test.
     public func run() : async Protocol {
-        if (not running) {
+        if not running {
             running := true;
             tests := List.reverse(tests);
             return #start(List.size(tests))
         };
         let results : Buffer.Buffer<Text> = Buffer.Buffer(options.batchSize);
         var capacity = options.batchSize;
-        while(capacity > 0) {
+        while capacity > 0 {
             capacity -= 1;
             switch tests {
                 case null {
                     return #done(results.toArray())
                 };
-                case (?((name, test), tl)) {
+                case ?((name, test), tl) {
                     tests := tl;
                     try {
                         let testResult = await test();
                         results.add(switch testResult {
-                            case (#success) {
+                            case #success {
                                 "\"" # name # "\"" # " succeeded.\n"
                             };
-                            case (#fail(msg)) {
+                            case #fail(msg) {
                                 "\"" # name # "\"" # " failed: " # msg # "\n"
                             };
                         });
@@ -144,7 +146,7 @@ public class Tester(options : { batchSize : Nat }) {
                 }
             }
         };
-        return if(List.isNil(tests)) {
+        return if List.isNil(tests) {
             #done(results.toArray());
         } else {
             #cont(results.toArray());

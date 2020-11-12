@@ -104,10 +104,12 @@ module {
 
     public func arrayTestable<A>(testableA : Testable<A>) : Testable<[A]> {
         {
-            display = func (xs : [A]) : Text =
+            display = func (xs : [A]) : Text {
                 "[" # joinWith(Array.map<A, Text>(xs, testableA.display), ", ") # "]";
-            equals = func (xs1 : [A], xs2 : [A]) : Bool =
+            }
+            equals = func (xs1 : [A], xs2 : [A]) : Bool {
                 Array.equal(xs1, xs2, testableA.equals)
+            }
         }
     };
 
@@ -121,15 +123,17 @@ module {
     };
 
     public func listTestable<A>(testableA : Testable<A>) : Testable<List.List<A>> = {
-        display = func (xs : List.List<A>) : Text =
+        display = func (xs : List.List<A>) : Text {
           // TODO fix leading comma
             "[" #
-            List.foldLeft(xs, "", func(acc : Text, x : A) : Text =
+            List.foldLeft(xs, "", func(acc : Text, x : A) : Text {
                 acc # ", " # testableA.display(x)
-            ) #
-            "]";
-        equals = func (xs1 : List.List<A>, xs2 : List.List<A>) : Bool =
+            }) #
+            "]"
+        };
+        equals = func (xs1 : List.List<A>, xs2 : List.List<A>) : Bool {
             List.equal(xs1, xs2, testableA.equals)
+        };
     };
 
     public func list<A>(testableA : Testable<A>, xs : List.List<A>) : TestableItem<List.List<A>> {
@@ -143,19 +147,14 @@ module {
 
     public func optionalTestable<A>(testableA : Testable<A>) : Testable<?A> {
         {
-            display = func (x : ?A) : Text = switch(x) {
+            display = func (x : ?A) : Text = switch x {
                 case null { "null" };
-                case (?a) { "(?" # testableA.display(a) # ")" };
+                case ?a { "(?" # testableA.display(a) # ")" };
             };
-            equals = func (x1 : ?A, x2 : ?A) : Bool = switch(x1) {
-                case null switch(x2) {
-                    case null { true };
-                    case _ { false };
-                };
-                case (?x1) switch(x2) {
-                    case null { false };
-                    case (?x2) { testableA.equals(x1, x2) };
-                };
+            equals = func (x1 : ?A, x2 : ?A) : Bool = switch (x1, x2) {
+                case (null, null) { true };
+                case (?x1, ?x2) { testableA.equals(x1, x2) };
+                case _ { false }
             };
         }
     };
@@ -174,10 +173,10 @@ module {
         eTestable : Testable<E>
     ) : Testable<Result.Result<R, E>> = {
         display = func (r : Result.Result<R, E>) : Text = switch r {
-            case (#ok(ok)) {
+            case #ok(ok) {
                 "#ok(" # rTestable.display(ok) # ")"
             };
-            case (#err(err)) {
+            case #err(err) {
                 "#err(" # eTestable.display(err) # ")"
             };
         };
@@ -188,7 +187,7 @@ module {
             case (#err(err1), #err(err2)) {
                 eTestable.equals(err1, err2)
             };
-            case (_) { false };
+            case _ { false };
         };
     };
 
@@ -226,14 +225,14 @@ module {
     func joinWith(xs : [Text], sep : Text) : Text {
         let size = xs.size();
 
-        if (size == 0) return "";
-        if (size == 1) return xs[0];
+        if size == 0 { return "" };
+        if size == 1 { return xs[0] };
 
         var result = xs[0];
         var i = 0;
         label l loop {
             i += 1;
-            if (i >= size) { break l; };
+            if i >= size { break l; };
             result #= sep # xs[i]
         };
         result

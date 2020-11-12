@@ -31,14 +31,18 @@ module {
     func joinWith(xs : [Text], sep : Text) : Text {
         let size = xs.size();
 
-        if (size == 0) return "";
-        if (size == 1) return xs[0];
+        if size == 0 {
+            return ""
+        };
+        if size == 1 {
+            return xs[0]
+        };
 
         var result = xs[0];
         var i = 0;
         label l loop {
             i += 1;
-            if (i >= size) { break l; };
+            if i >= size { break l; };
             result #= sep # xs[i]
         };
         result
@@ -61,16 +65,16 @@ module {
 
     func runInner(suite : Suite) : [Failure] {
         switch suite {
-            case (#node({ name; children })) {
+            case #node({ name; children }) {
                 let childFailures = Array.flatten (Array.map(children, runInner));
                 Array.map(childFailures, prependPath(name))
             };
-            case (#test({ name; test })) {
+            case #test({ name; test }) {
                 switch(test()) {
                     case null {
                         []
                     };
-                    case (?err) {
+                    case ?err {
                         [{ names = [name]; error = err }]
                     }
                 }
@@ -81,10 +85,10 @@ module {
     /// Runs a given suite of tests. Will exit with a non-zero exit code in case any of the tests fail.
     public func run(suite : Suite) {
         let failures = runInner(suite);
-        if (failures.size() == 0) {
+        if failures.size() == 0 {
             Debug.print("All tests passed.");
         } else {
-            for (failure in failures.vals()) {
+            for failure in failures.vals() {
                 Debug.print(displayFailure(failure))
             };
             Debug.print("\n" # Nat.toText(failures.size()) # " tests failed.");
@@ -111,7 +115,7 @@ module {
             name = testName;
             test = func () : ?Matchers.Description {
                 let item = mkItem();
-                if (matcher.matches(item)) {
+                if matcher.matches(item) {
                     null
                 } else {
                     let description = Matchers.Description();

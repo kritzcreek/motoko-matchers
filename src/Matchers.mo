@@ -28,7 +28,7 @@ module {
     /// writing an actual test suite you probably want to use the functions in
     /// [Suite](Suite.html).
     public func assertThat<A>(item : A, matcher : Matcher<A>) {
-        if (not matcher.matches(item)) {
+        if  not matcher.matches(item) {
             let description = Description();
             matcher.describeMismatch(item, description);
             Debug.print(description.toText());
@@ -39,7 +39,7 @@ module {
     /// Matches an `item` against a matcher and returns `null` in case the
     /// match succeeds and `?errorMessage` if it fails.
     public func attempt<A>(item : A, matcher : Matcher<A>) : { #success; #fail : Text } {
-        if (matcher.matches(item)) {
+        if matcher.matches(item) {
             #success
         } else {
             let description = Description();
@@ -135,9 +135,9 @@ module {
         };
         describeMismatch = func (item : A, description : Description) {
             var first = true;
-            for (matcher in matchers.vals()) {
-                if (not matcher.matches(item)) {
-                    if (first) {
+            for matcher in matchers.vals() {
+                if not matcher.matches(item) {
+                    if first {
                         first := false;
                     } else {
                         description.appendText("\nand ");
@@ -151,8 +151,8 @@ module {
     /// Matches if any matchers match, short circuits (like `or`)
     public func anyOf<A>(matchers : [Matcher<A>]) : Matcher<A> = {
         matches = func (item : A) : Bool {
-            for (matcher in matchers.vals()) {
-                if (matcher.matches(item)) {
+            for matcher in matchers.vals() {
+                if matcher.matches(item) {
                     return true;
                 }
             };
@@ -160,9 +160,9 @@ module {
         };
         describeMismatch = func (item : A, description : Description) {
             var first = true;
-            for (matcher in matchers.vals()) {
-                if (not matcher.matches(item)) {
-                    if (first) {
+            for matcher in matchers.vals() {
+                if not matcher.matches(item) {
+                    if first {
                         first := false;
                     } else {
                         description.appendText("\nor ");
@@ -186,18 +186,18 @@ module {
     /// Test an array’s elements against an array of matchers
     public func array<A>(matchers : [Matcher<A>]) : Matcher<[A]> = {
         matches = func (items : [A]) : Bool {
-            if (items.size() != matchers.size()) {
+            if items.size() != matchers.size() {
                 return false;
             };
-            for (ix in items.keys()) {
-                if (not matchers[ix].matches(items[ix])) {
+            for ix in items.keys() {
+                if not matchers[ix].matches(items[ix]) {
                     return false
                 }
             };
             return true;
         };
         describeMismatch = func (items : [A], description : Description) {
-            if (items.size() != matchers.size()) {
+            if items.size() != matchers.size() {
                 description.appendText(
                     "Length mismatch between " #
                     Nat.toText(items.size()) #
@@ -207,8 +207,8 @@ module {
                 );
                 return;
             };
-            for (ix in items.keys()) {
-                if (not matchers[ix].matches(items[ix])) {
+            for ix in items.keys() {
+                if not matchers[ix].matches(items[ix]) {
                     description.appendText("At index " # Nat.toText(ix) # ": ");
                     matchers[ix].describeMismatch(items[ix], description);
                     description.appendText("\n");
