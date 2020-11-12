@@ -87,11 +87,13 @@ public class Tester(options : { batchSize : Nat }) {
                     allTests := tl;
                     try {
                         result #= switch (await test()) {
-                          case (#success) "\"" # name # "\"" # " succeeded.\n";
-                          case (#fail(msg)) {
-                              failed += 1;
-                              "\"" # name # "\"" # " failed: " # msg # "\n"
-                          }
+                            case (#success) {
+                                "\"" # name # "\"" # " succeeded.\n"
+                            };
+                            case (#fail(msg)) {
+                                failed += 1;
+                                "\"" # name # "\"" # " failed: " # msg # "\n"
+                            };
                         };
                     } catch _ {
                         failed += 1;
@@ -129,8 +131,12 @@ public class Tester(options : { batchSize : Nat }) {
                     try {
                         let testResult = await test();
                         results.add(switch testResult {
-                          case (#success) "\"" # name # "\"" # " succeeded.\n";
-                          case (#fail(msg)) "\"" # name # "\"" # " failed: " # msg # "\n";
+                            case (#success) {
+                                "\"" # name # "\"" # " succeeded.\n"
+                            };
+                            case (#fail(msg)) {
+                                "\"" # name # "\"" # " failed: " # msg # "\n"
+                            };
                         });
                     } catch _ {
                         results.add("\"" # name # "\"" # "failed with an unexpected trap." # "\n");
