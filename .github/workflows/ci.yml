@@ -6,11 +6,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Check if Git tag exists
-      run: echo "::set-env name=HEAD_TAG::$(git tag --points-at HEAD)"
+      run: echo "name=HEAD_TAG::$(git tag --points-at HEAD)" >> $GITHUB_ENV
     - name: "install wasmtime"
       run: |
        mkdir /home/runner/bin
-       echo "::add-path::/home/runner/bin"
+       echo "/home/runner/bin" >> $GITHUB_PATH
        wget https://github.com/bytecodealliance/wasmtime/releases/download/v0.18.0/wasmtime-v0.18.0-x86_64-linux.tar.xz
        tar xf wasmtime-v0.18.0-x86_64-linux.tar.xz
        cp wasmtime-v0.18.0-x86_64-linux/wasmtime /home/runner/bin/wasmtime
