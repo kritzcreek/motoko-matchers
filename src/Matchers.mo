@@ -185,7 +185,7 @@ module {
 
     /// Test an array’s elements against an array of matchers
     public func array<A>(matchers : [Matcher<A>]) : Matcher<[A]> = {
-        matches = func (items : [A]) : Bool = {
+        matches = func (items : [A]) : Bool {
             if (items.size() != matchers.size()) {
                 return false;
             };
@@ -228,10 +228,9 @@ module {
     public func isNull<A>() : Matcher<T.TestableItem<?A>> = {
         matches = func (testable : T.TestableItem<?A>) : Bool = Option.isNull(testable.item);
         describeMismatch = func (testable : T.TestableItem<?A>, description : Description) =
-            switch (testable.item) {
-                case null ();
-                case (?i) description.appendText("expected `null`, but got " # testable.display(?i));
-            };
+            Option.iterate<A>(testable.item, func (i) {
+                description.appendText("expected `null`, but got " # testable.display(?i))
+            });
     };
 
 }
