@@ -67,8 +67,12 @@ module {
             };
             case (#test({ name; test })) {
                 switch(test()) {
-                    case null [];
-                    case (?err) [{ names = [name]; error = err }]
+                    case null {
+                        []
+                    };
+                    case (?err) {
+                        [{ names = [name]; error = err }]
+                    }
                 }
             };
         }

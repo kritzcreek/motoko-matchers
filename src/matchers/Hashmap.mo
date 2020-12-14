@@ -24,8 +24,12 @@ module {
             Option.getMapped(map.get(key.item), matcher.matches, false);
         describeMismatch = func (map : HM.HashMap<K, V>, description : M.Description) {
             switch (map.get(key.item)) {
-                case null description.appendText("Missing key " # key.display(key.item));
-                case (?v) matcher.describeMismatch(v, description)
+                case null {
+                    description.appendText("Missing key " # key.display(key.item))
+                };
+                case (?v) {
+                    matcher.describeMismatch(v, description)
+                };
             }
         };
     };
