@@ -51,9 +51,8 @@ public class Tester(options : { batchSize : Nat }) {
     var tests : List.List<Test> = List.nil();
     var running : Bool = false;
 
-    /// Registers a test. You can use [`attempt`](Matchers.html/#value.attempt)
-    /// to use a [`Matcher`](Matchers.html/#type.Matcher) to produce a
-    /// [`TestResult`](#type.TestResult).
+    /// Registers a test. You can use `attempt` to use a `Matcher` to
+    /// produce a `TestResult`.
     public func should(name : Text, test : () -> async TestResult) {
         if(running) return;
         tests := List.push((name, test), tests);
