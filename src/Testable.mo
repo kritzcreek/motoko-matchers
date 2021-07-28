@@ -27,6 +27,10 @@ import Bool "mo:base/Bool";
 import Int "mo:base/Int";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
+import Nat8 "mo:base/Nat8";
+import Nat16 "mo:base/Nat16";
+import Nat32 "mo:base/Nat32";
+import Nat64 "mo:base/Nat64";
 import Result "mo:base/Result";
 import Prim "mo:prim";
 
@@ -65,6 +69,51 @@ module {
         item = n;
         display = natTestable.display;
         equals = natTestable.equals;
+    };
+
+    public let nat8Testable : Testable<Nat8> = {
+        display = func (nat : Nat8) : Text {Nat8.toText(nat)};
+        equals = func (n1 : Nat8, n2 : Nat8) : Bool {n1 == n2};
+    };
+
+    public func nat8(n : Nat8) : TestableItem<Nat8> = {
+        item = n;
+        display = nat8Testable.display;
+        equals = nat8Testable.equals;
+    };
+
+    public let nat16Testable : Testable<Nat16> = {
+        display = func (nat : Nat16) : Text {Nat16.toText(nat)};
+        equals = func (n1 : Nat16, n2 : Nat16) : Bool {n1 == n2};
+    };
+
+    public func nat16(n : Nat16) : TestableItem<Nat16> = {
+        item = n;
+        display = nat16Testable.display;
+        equals = nat16Testable.equals;
+    };
+
+    public let nat32Testable : Testable<Nat32> = {
+        display = func (nat : Nat32) : Text {Nat32.toText(nat)};
+        equals = func (n1 : Nat32, n2 : Nat32) : Bool {n1 == n2};
+    };
+
+    public func nat32(n : Nat32) : TestableItem<Nat32> = {
+        item = n;
+        display = nat32Testable.display;
+        equals = nat32Testable.equals;
+    };
+
+
+    public let nat64Testable : Testable<Nat64> = {
+        display = func (nat : Nat64) : Text {Nat64.toText(nat)};
+        equals = func (n1 : Nat64, n2 : Nat64) : Bool {n1 == n2};
+    };
+
+    public func nat64(n : Nat64) : TestableItem<Nat64> = {
+        item = n;
+        display = nat64Testable.display;
+        equals = nat64Testable.equals;
     };
 
     public let intTestable : Testable<Int> = {
