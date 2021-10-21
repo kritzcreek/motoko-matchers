@@ -31,6 +31,7 @@ import Nat8 "mo:base/Nat8";
 import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Nat64 "mo:base/Nat64";
+import Float "mo:base/Float";
 import Result "mo:base/Result";
 import Prim "mo:prim";
 
@@ -69,6 +70,17 @@ module {
         item = n;
         display = natTestable.display;
         equals = natTestable.equals;
+    };
+
+    public let floatTestable : Testable<Float> = {
+        display = func (float : Float) : Text = Float.toText(float);
+        equals = func (f1 : Float, f2 : Float) : Bool = f1 == f2
+    };
+
+    public func float(f : Float) : TestableItem<Float> = {
+        item = f;
+        display = floatTestable.display;
+        equals = floatTestable.equals;
     };
 
     public let nat8Testable : Testable<Nat8> = {
