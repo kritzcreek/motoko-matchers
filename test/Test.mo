@@ -45,9 +45,9 @@ let suite = Suite.suite("Testing the testing", [
     Suite.suite("Hashmap matchers", [
         Suite.test("Should have key", map, HMMatchers.hasKey<Text, Nat>(T.text("key1"))),
         Suite.test("Should fail with missing key", map, HMMatchers.hasKey<Text, Nat>(T.text("unknown"))),
-        Suite.test("Should match at key", map, HMMatchers.atKey(T.text("key1"), equals20)),
-        Suite.test("should fail at key", map, HMMatchers.atKey(T.text("key2"), equals20)),
-        Suite.test("Should fail with missing key2", map, HMMatchers.atKey(T.text("unknown"), equals20)),
+        Suite.test("Should match at key", map, HMMatchers.atKey<Text, Nat>(T.text("key1"), equals20)),
+        Suite.test("should fail at key", map, HMMatchers.atKey<Text, Nat>(T.text("key2"), equals20)),
+        Suite.test("Should fail with missing key2", map, HMMatchers.atKey<Text, Nat>(T.text("unknown"), equals20)),
     ])    
 ]);
 
