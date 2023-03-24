@@ -1,5 +1,5 @@
-name: "build"
-on: push
+name: ci
+on: [push, pull_request]
 jobs:
   tests:
     runs-on: ubuntu-20.04
