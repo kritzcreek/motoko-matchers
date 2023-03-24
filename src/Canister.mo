@@ -129,7 +129,7 @@ module {
                 capacity -= 1;
                 switch tests {
                     case null {
-                        return #done(results.toArray());
+                        return #done(Buffer.toArray(results));
                     };
                     case (?((name, test), tl)) {
                         tests := tl;
@@ -152,9 +152,9 @@ module {
                 };
             };
             return if (List.isNil(tests)) {
-                #done(results.toArray());
+                #done(Buffer.toArray(results));
             } else {
-                #cont(results.toArray());
+                #cont(Buffer.toArray(results));
             };
         };
     };
