@@ -20,28 +20,24 @@ import Array "mo:base/Array";
 import Debug "mo:base/Debug";
 import Matchers "Matchers";
 import Nat "mo:base/Nat";
+import List "mo:base/List";
 
 module {
 
     type Failure = {
-        names : [Text];
+        names : List.List<Text>;
         error : Matchers.Description;
     };
 
-    func joinWith(xs : [Text], sep : Text) : Text {
-        let size = xs.size();
-
-        if (size == 0) return "";
-        if (size == 1) return xs[0];
-
-        var result = xs[0];
-        var i = 0;
-        label l loop {
-            i += 1;
-            if (i >= size) { break l };
-            result #= sep # xs[i];
+    func joinWith(xs : List.List<Text>, sep : Text) : Text {
+        switch (xs) {
+            case null {
+                "";
+            };
+            case (?(h, t)) {
+                List.foldLeft<Text, Text>(t, h, func(acc, x) = acc # sep # x);
+            };
         };
-        result;
     };
 
     func displayFailure(failure : Failure) : Text = "\n" # joinWith(failure.names, "/") # " failed:\n" # failure.error.toText();
@@ -54,7 +50,7 @@ module {
     };
 
     func prependPath(name : Text) : Failure -> Failure = func(failure : Failure) : Failure = {
-        names = Array.append([name], failure.names);
+        names = List.push(name, failure.names);
         error = failure.error;
     };
 
@@ -67,7 +63,7 @@ module {
             case (#test({ name; test })) {
                 switch (test()) {
                     case null { [] };
-                    case (?err) { [{ names = [name]; error = err }] };
+                    case (?err) { [{ names = ?(name, null); error = err }] };
                 };
             };
         };
