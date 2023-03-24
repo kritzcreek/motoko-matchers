@@ -38,23 +38,22 @@ module {
         var i = 0;
         label l loop {
             i += 1;
-            if (i >= size) { break l; };
-            result #= sep # xs[i]
+            if (i >= size) { break l };
+            result #= sep # xs[i];
         };
-        result
+        result;
     };
 
-    func displayFailure(failure : Failure) : Text =
-      "\n" # joinWith(failure.names, "/") # " failed:\n" # failure.error.toText();
+    func displayFailure(failure : Failure) : Text = "\n" # joinWith(failure.names, "/") # " failed:\n" # failure.error.toText();
 
     /// A collection of tests to be run together
     // TODO: Maybe this should be a Forest rather than a Tree?
     public type Suite = {
         #node : { name : Text; children : [Suite] };
-        #test : { name : Text; test: () -> ?Matchers.Description };
+        #test : { name : Text; test : () -> ?Matchers.Description };
     };
 
-    func prependPath(name : Text) : Failure -> Failure = func (failure : Failure) : Failure = {
+    func prependPath(name : Text) : Failure -> Failure = func(failure : Failure) : Failure = {
         names = Array.append([name], failure.names);
         error = failure.error;
     };
@@ -62,20 +61,16 @@ module {
     func runInner(suite : Suite) : [Failure] {
         switch suite {
             case (#node({ name; children })) {
-                let childFailures = Array.flatten (Array.map(children, runInner));
-                Array.map(childFailures, prependPath(name))
+                let childFailures = Array.flatten(Array.map(children, runInner));
+                Array.map(childFailures, prependPath(name));
             };
             case (#test({ name; test })) {
-                switch(test()) {
-                    case null {
-                        []
-                    };
-                    case (?err) {
-                        [{ names = [name]; error = err }]
-                    }
-                }
+                switch (test()) {
+                    case null { [] };
+                    case (?err) { [{ names = [name]; error = err }] };
+                };
             };
-        }
+        };
     };
 
     /// Runs a given suite of tests. Will exit with a non-zero exit code in case any of the tests fail.
@@ -85,23 +80,23 @@ module {
             Debug.print("All tests passed.");
         } else {
             for (failure in failures.vals()) {
-                Debug.print(displayFailure(failure))
+                Debug.print(displayFailure(failure));
             };
             Debug.print("\n" # Nat.toText(failures.size()) # " tests failed.");
 
             // Is there a more graceful way to `exit(1)` here?
-            assert(false)
-        }
+            assert (false);
+        };
     };
 
     /// Constructs a test suite from a name and an Array of
     public func suite(suiteName : Text, suiteChildren : [Suite]) : Suite {
-        #node({ name = suiteName; children = suiteChildren })
+        #node({ name = suiteName; children = suiteChildren });
     };
 
     /// Constructs a single test by matching the given `item` against a `matcher`.
     public func test<A>(testName : Text, item : A, matcher : Matchers.Matcher<A>) : Suite {
-        testLazy(testName, func(): A = item, matcher)
+        testLazy(testName, func() : A = item, matcher);
     };
 
     /// Like `test`, but accepts a thunk `mkItem` that creates the value to match against.
@@ -109,16 +104,16 @@ module {
     public func testLazy<A>(testName : Text, mkItem : () -> A, matcher : Matchers.Matcher<A>) : Suite {
         #test({
             name = testName;
-            test = func () : ?Matchers.Description {
+            test = func() : ?Matchers.Description {
                 let item = mkItem();
                 if (matcher.matches(item)) {
-                    null
+                    null;
                 } else {
                     let description = Matchers.Description();
                     matcher.describeMismatch(item, description);
-                    ?(description)
+                    ?(description);
                 };
-            }
-        })
+            };
+        });
     };
-}
+};
