@@ -48,6 +48,12 @@ module {
         item : A;
     };
 
+    public object unit : TestableItem<()> {
+      public let item = ();
+      public func display(()) : Text = "()";
+      public func equals((), ()) : Bool = true;
+    };
+
     public let textTestable : Testable<Text> = {
         // TODO Actually escape the text here
         display = func(text : Text) : Text { "\"" # text # "\"" };
