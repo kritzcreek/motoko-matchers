@@ -16,100 +16,100 @@
 /// Suite.run(suite);
 /// ```
 
-import Array "mo:base/Array";
-import Debug "mo:base/Debug";
+import Array "mo:core/Array";
+import Debug "mo:core/Debug";
 import Matchers "Matchers";
-import Nat "mo:base/Nat";
-import List "mo:base/List";
+import Nat "mo:core/Nat";
+import List "mo:core/pure/List";
 
 module {
 
-    type Failure = {
-        names : List.List<Text>;
-        error : Matchers.Description;
-    };
+  type Failure = {
+    names : List.List<Text>;
+    error : Matchers.Description;
+  };
 
-    func joinWith(xs : List.List<Text>, sep : Text) : Text {
-        switch (xs) {
-            case null {
-                "";
-            };
-            case (?(h, t)) {
-                List.foldLeft<Text, Text>(t, h, func(acc, x) = acc # sep # x);
-            };
+  func joinWith(xs : List.List<Text>, sep : Text) : Text {
+    switch (xs) {
+      case null {
+        "";
+      };
+      case (?(h, t)) {
+        List.foldLeft<Text, Text>(t, h, func(acc, x) = acc # sep # x);
+      };
+    };
+  };
+
+  func displayFailure(failure : Failure) : Text = "\n" # joinWith(failure.names, "/") # " failed:\n" # failure.error.toText();
+
+  /// A collection of tests to be run together
+  // TODO: Maybe this should be a Forest rather than a Tree?
+  public type Suite = {
+    #node : { name : Text; children : [Suite] };
+    #test : { name : Text; test : () -> ?Matchers.Description };
+  };
+
+  func prependPath(name : Text) : Failure -> Failure = func(failure : Failure) : Failure = {
+    names = List.pushFront<Text>(failure.names, name);
+    error = failure.error;
+  };
+
+  func runInner(suite : Suite) : [Failure] {
+    switch suite {
+      case (#node({ name; children })) {
+        let childFailures = Array.flatten(Array.map(children, runInner));
+        Array.map(childFailures, prependPath(name));
+      };
+      case (#test({ name; test })) {
+        switch (test()) {
+          case null { [] };
+          case (?err) { [{ names = ?(name, null); error = err }] };
         };
+      };
     };
+  };
 
-    func displayFailure(failure : Failure) : Text = "\n" # joinWith(failure.names, "/") # " failed:\n" # failure.error.toText();
+  /// Runs a given suite of tests. Will exit with a non-zero exit code in case any of the tests fail.
+  public func run(suite : Suite) {
+    let failures = runInner(suite);
+    if (failures.size() == 0) {
+      Debug.print("All tests passed.");
+    } else {
+      for (failure in failures.vals()) {
+        Debug.print(displayFailure(failure));
+      };
+      Debug.print("\n" # Nat.toText(failures.size()) # " tests failed.");
 
-    /// A collection of tests to be run together
-    // TODO: Maybe this should be a Forest rather than a Tree?
-    public type Suite = {
-        #node : { name : Text; children : [Suite] };
-        #test : { name : Text; test : () -> ?Matchers.Description };
+      // Is there a more graceful way to `exit(1)` here?
+      assert (false);
     };
+  };
 
-    func prependPath(name : Text) : Failure -> Failure = func(failure : Failure) : Failure = {
-        names = List.push(name, failure.names);
-        error = failure.error;
-    };
+  /// Constructs a test suite from a name and an Array of
+  public func suite(suiteName : Text, suiteChildren : [Suite]) : Suite {
+    #node({ name = suiteName; children = suiteChildren });
+  };
 
-    func runInner(suite : Suite) : [Failure] {
-        switch suite {
-            case (#node({ name; children })) {
-                let childFailures = Array.flatten(Array.map(children, runInner));
-                Array.map(childFailures, prependPath(name));
-            };
-            case (#test({ name; test })) {
-                switch (test()) {
-                    case null { [] };
-                    case (?err) { [{ names = ?(name, null); error = err }] };
-                };
-            };
-        };
-    };
+  /// Constructs a single test by matching the given `item` against a `matcher`.
+  public func test<A>(testName : Text, item : A, matcher : Matchers.Matcher<A>) : Suite {
+    testLazy(testName, func() : A = item, matcher);
+  };
 
-    /// Runs a given suite of tests. Will exit with a non-zero exit code in case any of the tests fail.
-    public func run(suite : Suite) {
-        let failures = runInner(suite);
-        if (failures.size() == 0) {
-            Debug.print("All tests passed.");
+  /// Like `test`, but accepts a thunk `mkItem` that creates the value to match against.
+  /// Use this to delay the evaluation of the to be matched value until the tests actually run.
+  public func testLazy<A>(testName : Text, mkItem : () -> A, matcher : Matchers.Matcher<A>) : Suite {
+    #test({
+      name = testName;
+      test = func() : ?Matchers.Description {
+        let item = mkItem();
+        if (matcher.matches(item)) {
+          null;
         } else {
-            for (failure in failures.vals()) {
-                Debug.print(displayFailure(failure));
-            };
-            Debug.print("\n" # Nat.toText(failures.size()) # " tests failed.");
-
-            // Is there a more graceful way to `exit(1)` here?
-            assert (false);
+          let description = Matchers.Description();
+          matcher.describeMismatch(item, description);
+          ?(description);
         };
-    };
-
-    /// Constructs a test suite from a name and an Array of
-    public func suite(suiteName : Text, suiteChildren : [Suite]) : Suite {
-        #node({ name = suiteName; children = suiteChildren });
-    };
-
-    /// Constructs a single test by matching the given `item` against a `matcher`.
-    public func test<A>(testName : Text, item : A, matcher : Matchers.Matcher<A>) : Suite {
-        testLazy(testName, func() : A = item, matcher);
-    };
-
-    /// Like `test`, but accepts a thunk `mkItem` that creates the value to match against.
-    /// Use this to delay the evaluation of the to be matched value until the tests actually run.
-    public func testLazy<A>(testName : Text, mkItem : () -> A, matcher : Matchers.Matcher<A>) : Suite {
-        #test({
-            name = testName;
-            test = func() : ?Matchers.Description {
-                let item = mkItem();
-                if (matcher.matches(item)) {
-                    null;
-                } else {
-                    let description = Matchers.Description();
-                    matcher.describeMismatch(item, description);
-                    ?(description);
-                };
-            };
-        });
-    };
+      };
+    });
+  };
 };

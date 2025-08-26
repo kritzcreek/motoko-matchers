@@ -22,17 +22,17 @@
 ///        optText.equals(person1.surname, person2.surname)
 /// }
 /// ```
-import Array "mo:base/Array";
-import Bool "mo:base/Bool";
-import Int "mo:base/Int";
-import List "mo:base/List";
-import Nat "mo:base/Nat";
-import Nat8 "mo:base/Nat8";
-import Nat16 "mo:base/Nat16";
-import Nat32 "mo:base/Nat32";
-import Nat64 "mo:base/Nat64";
-import Result "mo:base/Result";
-import Prim "mo:prim";
+import Array "mo:core/Array";
+import Bool "mo:core/Bool";
+import Char "mo:core/Char";
+import Int "mo:core/Int";
+import List "mo:core/List";
+import Nat "mo:core/Nat";
+import Nat8 "mo:core/Nat8";
+import Nat16 "mo:core/Nat16";
+import Nat32 "mo:core/Nat32";
+import Nat64 "mo:core/Nat64";
+import Result "mo:core/Result";
 
 module {
     /// Packs up all the functions we need to compare and display values under test
@@ -144,7 +144,7 @@ module {
     };
 
     public let charTestable : Testable<Char> = {
-        display = func(n : Char) : Text { "'" # Prim.charToText(n) # "'" };
+        display = func(n : Char) : Text { "'" # Char.toText(n) # "'" };
         equals = func(n1 : Char, n2 : Char) : Bool { n1 == n2 };
     };
 
@@ -173,19 +173,12 @@ module {
     };
 
     public func listTestable<A>(testableA : Testable<A>) : Testable<List.List<A>> = {
-        display = func(xs : List.List<A>) : Text =
-        // TODO fix leading comma
-        "[" #
-        List.foldLeft(
-            xs,
-            "",
-            func(acc : Text, x : A) : Text = acc # ", " # testableA.display(x),
-        ) # "]";
+        display = func(xs : List.List<A>) : Text = List.toText(xs, testableA.display);
         equals = func(xs1 : List.List<A>, xs2 : List.List<A>) : Bool = List.equal(xs1, xs2, testableA.equals);
     };
 
     public func list<A>(testableA : Testable<A>, xs : List.List<A>) : TestableItem<List.List<A>> {
-        let testableAs = listTestable(testableA);
+        let testableAs = listTestable<A>(testableA);
         {
             item = xs;
             display = testableAs.display;

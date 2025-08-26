@@ -1,4 +1,3 @@
-![build](https://github.com/kritzcreek/motoko-matchers/workflows/build/badge.svg)
 # motoko-matchers
 
 Composable assertions for unit testing
@@ -6,16 +5,14 @@ Composable assertions for unit testing
 Heavily inspired by Java's Hamcrest matchers.
 
 ## Examples
-Check out `test/Test.mo`
+Check out `test/Test.test.mo`
 
 ## Documentation
 Documentation for the latest release can be found at https://kritzcreek.github.io/motoko-matchers.
 
-If you'd like to generate documentation locally run `$(vessel bin)/mo-doc && firefox docs/index.html`.
-
 ## License
 
-Copyright 2020 Christoph Hegemann
+Copyright 2025 Christoph Hegemann
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
