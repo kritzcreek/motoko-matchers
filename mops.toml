@@ -1,0 +1,14 @@
+[package]
+name = "matchers"
+version = "2.0.0"
+description = "Composable assertions for unit testing"
+repository = "https://github.com/kritzcreek/motoko-matchers"
+keywords = [ "testing" ]
+license = "Apache-2.0"
+
+[dependencies]
+core = "1.0.0"
+
+[toolchain]
+moc = "0.16.1"
+wasmtime = "36.0.1"
