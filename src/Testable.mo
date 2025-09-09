@@ -27,6 +27,7 @@ import Bool "mo:core/Bool";
 import Char "mo:core/Char";
 import Int "mo:core/Int";
 import List "mo:core/List";
+import PureList "mo:core/pure/List";
 import Nat "mo:core/Nat";
 import Nat8 "mo:core/Nat8";
 import Nat16 "mo:core/Nat16";
@@ -178,6 +179,20 @@ module {
     };
 
     public func list<A>(testableA : Testable<A>, xs : List.List<A>) : TestableItem<List.List<A>> {
+        let testableAs = listTestable<A>(testableA);
+        {
+            item = xs;
+            display = testableAs.display;
+            equals = testableAs.equals;
+        };
+    };
+
+    public func linkedListTestable<A>(testableA : Testable<A>) : Testable<PureList.List<A>> = {
+        display = func(xs : PureList.List<A>) : Text = PureList.toText(xs, testableA.display);
+        equals = func(xs1 : PureList.List<A>, xs2 : PureList.List<A>) : Bool = PureList.equal(xs1, xs2, testableA.equals);
+    };
+
+    public func linkedList<A>(testableA : Testable<A>, xs : PureList.List<A>) : TestableItem<PureList.List<A>> {
         let testableAs = listTestable<A>(testableA);
         {
             item = xs;
