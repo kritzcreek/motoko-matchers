@@ -143,7 +143,7 @@ module {
     };
 
     public func array<A>(testableA : Testable<A>, xs : [A]) : TestableItem<[A]> = {
-        arrayTestable with item = xs;
+        arrayTestable(testableA) with item = xs;
     };
 
     public func listTestable<A>(testableA : Testable<A>) : Testable<List.List<A>> = {
