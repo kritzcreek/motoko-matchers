@@ -193,12 +193,7 @@ module {
     };
 
     public func linkedList<A>(testableA : Testable<A>, xs : PureList.List<A>) : TestableItem<PureList.List<A>> {
-        let testableAs = listTestable<A>(testableA);
-        {
-            item = xs;
-            display = testableAs.display;
-            equals = testableAs.equals;
-        };
+        { linkedListTestable<A>(testableA) with item = xs };
     };
 
     public func optionalTestable<A>(testableA : Testable<A>) : Testable<?A> {
