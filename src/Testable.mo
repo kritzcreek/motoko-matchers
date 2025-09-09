@@ -62,9 +62,7 @@ module {
     };
 
     public func text(t : Text) : TestableItem<Text> = {
-        item = t;
-        display = textTestable.display;
-        equals = textTestable.equals;
+        textTestable with item = t
     };
 
     public let natTestable : Testable<Nat> = {
@@ -73,9 +71,7 @@ module {
     };
 
     public func nat(n : Nat) : TestableItem<Nat> = {
-        item = n;
-        display = natTestable.display;
-        equals = natTestable.equals;
+        natTestable with item = n;
     };
 
     public let nat8Testable : Testable<Nat8> = {
@@ -84,9 +80,7 @@ module {
     };
 
     public func nat8(n : Nat8) : TestableItem<Nat8> = {
-        item = n;
-        display = nat8Testable.display;
-        equals = nat8Testable.equals;
+        nat8Testable with item = n;
     };
 
     public let nat16Testable : Testable<Nat16> = {
@@ -95,9 +89,7 @@ module {
     };
 
     public func nat16(n : Nat16) : TestableItem<Nat16> = {
-        item = n;
-        display = nat16Testable.display;
-        equals = nat16Testable.equals;
+        nat16Testable with item = n;
     };
 
     public let nat32Testable : Testable<Nat32> = {
@@ -106,9 +98,7 @@ module {
     };
 
     public func nat32(n : Nat32) : TestableItem<Nat32> = {
-        item = n;
-        display = nat32Testable.display;
-        equals = nat32Testable.equals;
+        nat32Testable with item = n;
     };
 
     public let nat64Testable : Testable<Nat64> = {
@@ -117,9 +107,7 @@ module {
     };
 
     public func nat64(n : Nat64) : TestableItem<Nat64> = {
-        item = n;
-        display = nat64Testable.display;
-        equals = nat64Testable.equals;
+        nat64Testable with item = n;
     };
 
     public let intTestable : Testable<Int> = {
@@ -128,9 +116,7 @@ module {
     };
 
     public func int(n : Int) : TestableItem<Int> = {
-        item = n;
-        display = intTestable.display;
-        equals = intTestable.equals;
+        intTestable with item = n;
     };
 
     public let boolTestable : Testable<Bool> = {
@@ -139,9 +125,7 @@ module {
     };
 
     public func bool(n : Bool) : TestableItem<Bool> = {
-        item = n;
-        display = boolTestable.display;
-        equals = boolTestable.equals;
+        boolTestable with item = n;
     };
 
     public let charTestable : Testable<Char> = {
@@ -149,28 +133,17 @@ module {
         equals = func(n1 : Char, n2 : Char) : Bool { n1 == n2 };
     };
 
-    public func char(n : Char) : TestableItem<Char> {
-        {
-            item = n;
-            display = charTestable.display;
-            equals = charTestable.equals;
-        };
+    public func char(n : Char) : TestableItem<Char> = {
+        charTestable with item = n;
     };
 
-    public func arrayTestable<A>(testableA : Testable<A>) : Testable<[A]> {
-        {
-            display = func(xs : [A]) : Text = "[" # joinWith(Array.map<A, Text>(xs, testableA.display), ", ") # "]";
-            equals = func(xs1 : [A], xs2 : [A]) : Bool = Array.equal(xs1, xs2, testableA.equals);
-        };
+    public func arrayTestable<A>(testableA : Testable<A>) : Testable<[A]> = {
+        display = func(xs : [A]) : Text = "[" # joinWith(Array.map<A, Text>(xs, testableA.display), ", ") # "]";
+        equals = func(xs1 : [A], xs2 : [A]) : Bool = Array.equal(xs1, xs2, testableA.equals);
     };
 
-    public func array<A>(testableA : Testable<A>, xs : [A]) : TestableItem<[A]> {
-        let testableAs = arrayTestable(testableA);
-        {
-            item = xs;
-            display = testableAs.display;
-            equals = testableAs.equals;
-        };
+    public func array<A>(testableA : Testable<A>, xs : [A]) : TestableItem<[A]> = {
+        arrayTestable with item = xs;
     };
 
     public func listTestable<A>(testableA : Testable<A>) : Testable<List.List<A>> = {
@@ -178,13 +151,8 @@ module {
         equals = func(xs1 : List.List<A>, xs2 : List.List<A>) : Bool = List.equal(xs1, xs2, testableA.equals);
     };
 
-    public func list<A>(testableA : Testable<A>, xs : List.List<A>) : TestableItem<List.List<A>> {
-        let testableAs = listTestable<A>(testableA);
-        {
-            item = xs;
-            display = testableAs.display;
-            equals = testableAs.equals;
-        };
+    public func list<A>(testableA : Testable<A>, xs : List.List<A>) : TestableItem<List.List<A>> = {
+        listTestable<A>(testableA) with item = xs;
     };
 
     public func linkedListTestable<A>(testableA : Testable<A>) : Testable<PureList.List<A>> = {
@@ -192,36 +160,29 @@ module {
         equals = func(xs1 : PureList.List<A>, xs2 : PureList.List<A>) : Bool = PureList.equal(xs1, xs2, testableA.equals);
     };
 
-    public func linkedList<A>(testableA : Testable<A>, xs : PureList.List<A>) : TestableItem<PureList.List<A>> {
-        { linkedListTestable<A>(testableA) with item = xs };
+    public func linkedList<A>(testableA : Testable<A>, xs : PureList.List<A>) : TestableItem<PureList.List<A>> = {
+        linkedListTestable<A>(testableA) with item = xs;
     };
 
-    public func optionalTestable<A>(testableA : Testable<A>) : Testable<?A> {
-        {
-            display = func(x : ?A) : Text = switch (x) {
-                case null { "null" };
-                case (?a) { "(?" # testableA.display(a) # ")" };
+    public func optionalTestable<A>(testableA : Testable<A>) : Testable<?A> = {
+        display = func(x : ?A) : Text = switch x {
+            case null { "null" };
+            case (?a) { "(?" # testableA.display(a) # ")" };
+        };
+        equals = func(x1 : ?A, x2 : ?A) : Bool = switch x1 {
+            case null switch x2 {
+                case null true;
+                case _ false;
             };
-            equals = func(x1 : ?A, x2 : ?A) : Bool = switch (x1) {
-                case null switch (x2) {
-                    case null { true };
-                    case _ { false };
-                };
-                case (?x1) switch (x2) {
-                    case null { false };
-                    case (?x2) { testableA.equals(x1, x2) };
-                };
+            case (?x1) switch (x2) {
+                case null false;
+                case (?x2) { testableA.equals(x1, x2) };
             };
         };
     };
 
-    public func optional<A>(testableA : Testable<A>, x : ?A) : TestableItem<?A> {
-        let testableOA = optionalTestable(testableA);
-        {
-            item = x;
-            display = testableOA.display;
-            equals = testableOA.equals;
-        };
+    public func optional<A>(testableA : Testable<A>, x : ?A) : TestableItem<?A> = {
+        optionalTestable(testableA) with item = x;
     };
 
     public func resultTestable<R, E>(
@@ -243,7 +204,7 @@ module {
             case (#err(err1), #err(err2)) {
                 eTestable.equals(err1, err2);
             };
-            case (_) { false };
+            case _ false;
         };
     };
 
@@ -251,13 +212,8 @@ module {
         rTestable : Testable<R>,
         eTestable : Testable<E>,
         x : Result.Result<R, E>,
-    ) : TestableItem<Result.Result<R, E>> {
-        let resTestable = resultTestable(rTestable, eTestable);
-        {
-            display = resTestable.display;
-            equals = resTestable.equals;
-            item = x;
-        };
+    ) : TestableItem<Result.Result<R, E>> = {
+        resultTestable(rTestable, eTestable) with item = x;
     };
 
     public func tuple2Testable<A, B>(ta : Testable<A>, tb : Testable<B>) : Testable<(A, B)> {
@@ -267,13 +223,8 @@ module {
         };
     };
 
-    public func tuple2<A, B>(ta : Testable<A>, tb : Testable<B>, x : (A, B)) : TestableItem<(A, B)> {
-        let testableTAB = tuple2Testable(ta, tb);
-        {
-            item = x;
-            display = testableTAB.display;
-            equals = testableTAB.equals;
-        };
+    public func tuple2<A, B>(ta : Testable<A>, tb : Testable<B>, x : (A, B)) : TestableItem<(A, B)> = {
+        tuple2Testable(ta, tb) with item = x;
     };
 
     func joinWith(xs : [Text], sep : Text) : Text {
