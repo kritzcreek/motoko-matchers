@@ -1,6 +1,6 @@
 [package]
 name = "matchers"
-version = "2.0.0"
+version = "2.1.0"
 description = "Composable assertions for unit testing"
 repository = "https://github.com/kritzcreek/motoko-matchers"
 keywords = [ "testing" ]
