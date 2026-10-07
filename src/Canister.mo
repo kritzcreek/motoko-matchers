@@ -31,12 +31,12 @@ module {
   ///     let it = C.Tester({ batchSize = 8 });
   ///     public shared func test() : async Text {
   ///
-  ///         it.should("greet me", func () : async C.TestResult = async {
+  ///         it.should("greet me", func () : async C.TestResult {
   ///           let greeting = await Canister.greet("Christoph");
   ///           M.attempt(greeting, M.equals(T.text("Hello, Christoph!")))
   ///         });
   ///
-  ///         it.shouldFailTo("greet him-whose-name-shall-not-be-spoken", func () : async () = async {
+  ///         it.shouldFailTo("greet him-whose-name-shall-not-be-spoken", func () : async () {
   ///           let greeting = await Canister.greet("Voldemort");
   ///           ignore greeting
   ///         });
@@ -64,7 +64,7 @@ module {
         tests,
         (
           name,
-          func() : async TestResult = async {
+          func() : async TestResult {
             try {
               let _testResult = await test();
               #fail("Should've failed, but didn't");
